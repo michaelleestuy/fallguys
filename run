@@ -1,0 +1,124 @@
+#! /usr/bin/python3
+from datetime import date
+
+class bcolors:
+    HEADER = '\033[95m'
+    OKBLUE = '\033[94m'
+    OKGREEN = '\033[92m'
+    WARNING = '\033[93m'
+    FAIL = '\033[91m'
+    ENDC = '\033[0m'
+    BOLD = '\033[1m'
+    UNDERLINE = '\033[4m'
+
+def load():
+    f = open('records.csv', 'r')
+    name_line = f.readline().split(',')
+    game_line = f.readline().split(',')
+    wins_line = f.readline().split(',')
+
+    d = {}
+    for i, v in enumerate(name_line):
+        d[v.rstrip()] = [int(game_line[i]), int(wins_line[i])]
+    f.close()
+    return d 
+
+def save(d):
+    f = open('records.csv', 'w')
+    s = ''
+    for i in sorted(d.keys()):
+        s += i + ','
+    s = s[:-1] + '\n'
+
+    for i in sorted(d.keys()):
+        s += str(d[i][0]) + ','
+    s = s[:-1] + '\n'
+
+    for i in sorted(d.keys()):
+        s += str(d[i][1]) + ','
+    s = s[:-1] + '\n'
+
+    f.write(s)
+    f.close()
+
+def display(d):
+    s = '\n'
+    for i in sorted(d.keys()):
+        s += i + ': ' + str(d[i][1]) + '/' + str(d[i][0])
+        if d[i][0] > 0:
+            s += ' ' + '%.2f' % (d[i][1] * 100.0 / d[i][0]) + '%'
+        s += '\n'
+    print(s)
+
+def update(d, game, win):
+    win = 1 if win == 'w' or win == 'W' else 0
+    g_name = ''
+    if game == 'block': 
+        g_name = 'Block Party'
+    if game == 'door':
+        g_name = 'Door Dash'
+    if game == 'egg':
+        g_name = 'Egg Scramble'
+    if game == 'ball':
+        g_name = 'Fall Ball'
+    if game == 'mountain':
+        g_name = 'Fall Mountain'
+    if game == 'fruit':
+        g_name = 'Fruit Chute'
+    if game == 'gate':
+        g_name = 'Gate Crash'
+    if game == 'hex':
+        g_name = 'Hex-A-Gone'
+    if game == 'hit':
+        g_name = 'Hit Parade'
+    if game == 'hoarders':
+        g_name = 'Hoarders'
+    if game == 'hoopsie':
+        g_name = 'Hoopsie Daisy'
+    if game == 'jinxed':
+        g_name = 'Jinxed'
+    if game == 'club':
+        g_name = 'Jump Club'
+    if game == 'showdown':
+        g_name = 'Jump Showdown'
+    if game == 'perfect':
+        g_name = 'Perfect Match'
+    if game == 'rock':
+        g_name = 'Rock N Roll'
+    if game == 'roll':
+        g_name = 'Roll Out'
+    if game == 'royal':
+        g_name = 'Royal Fumble'
+    if game == 'see': 
+        g_name = 'See Saw'
+    if game == 'slime':
+        g_name = 'Slime Climb'
+    if game == 'tail':
+        g_name = 'Tail Tag'
+    if game == 'tip':
+        g_name = 'Tip Top'
+    if game == 'whirl':
+        g_name = 'Whirlygig'
+    if g_name == '':
+        print('Error: invalid game name.')
+        return
+    d[g_name][0] += 1
+    d[g_name][1] += win
+    f = open('log.csv', 'a')
+    today = date.today()
+    f.write(g_name + ',' + str(win) + ',' + today.strftime('%m/%d/%y') + '\n')
+    f.close()
+
+if __name__ == '__main__':
+    while True:
+        d = load()
+        display(d)
+        val = input('$ ').rstrip()
+        vals = val.split(' ')
+        if vals[0] == 'exit':
+            break
+        if len(vals) != 2:
+            print('Error: invalid input.')
+            continue
+        update(d, vals[0], vals[1])
+        save(d)
